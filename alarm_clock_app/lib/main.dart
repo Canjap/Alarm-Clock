@@ -1,4 +1,3 @@
-
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,25 +46,33 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  var timeRN = context.watch<MyAppState>();
-
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: timeNow(timeRN: timeRN,)
-      ),
+      body: GeneratorPage(),
     );
   }
 }
+
+class GeneratorPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+      var appState = context.watch<MyAppState>();  
+      var timeRN = appState.time;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          timeNow(timeRN: timeRN),
+        ]),
+    );
+  }
+}
+
+
 
 class timeNow extends StatelessWidget {
   const timeNow({
@@ -81,7 +88,7 @@ class timeNow extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(202),
+        padding: const EdgeInsets.all(201),
         child: Text(
           "$timeRN",
         ),
