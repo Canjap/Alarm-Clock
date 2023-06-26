@@ -33,12 +33,41 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var timeNow = appState.currentTime;
+
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Text('A random idea:'),
-          Text("$timeNow"),
+          displayCard(timeNow: timeNow),
         ],
+      ),
+    );
+  }
+}
+
+
+class displayCard extends Card {
+  const displayCard({
+    super.key,
+    required this.timeNow
+  });
+
+  final DateTime timeNow;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,  
+    );
+    return Center(
+      child: Card(
+        elevation: 20.0,
+        color: theme.colorScheme.primary,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text("$timeNow", style:style),
+        ),
       ),
     );
   }
