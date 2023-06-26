@@ -25,19 +25,19 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  var currentTime = DateTime.now();
 }
 
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-
+    var timeNow = appState.currentTime;
     return Scaffold(
       body: Column(
         children: [
           Text('A random idea:'),
-          Text(appState.current.asLowerCase),
+          Text("$timeNow"),
         ],
       ),
     );
