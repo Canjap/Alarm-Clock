@@ -1,4 +1,4 @@
-import 'package:english_words/english_words.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         title: "Alarm Clock App",
         theme: ThemeData(
           useMaterial3: true, 
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black26),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white30),
         ),
         home: MyHomePage(),
       ),
@@ -25,20 +25,23 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var currentTime = DateTime.now();
+  var currentDateTime = DateTime.now();
 }
 
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var timeNow = appState.currentTime;
-
+    var dateTimeNow = appState.currentDateTime;
+    var dayNow = DateFormat('EEEE, d MMM, yyyy').format(dateTimeNow);
+    var timeNow = DateFormat("jm").format(dateTimeNow);
+    
     return Scaffold(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          displayCard(timeNow: timeNow),
+          displayDay(dayNow: dayNow),
+          displayTime(timeNow: timeNow)
         ],
       ),
     );
@@ -46,19 +49,18 @@ class MyHomePage extends StatelessWidget {
 }
 
 
-class displayCard extends Card {
-  const displayCard({
+class displayDay extends Card {
+  const displayDay({
     super.key,
-    required this.timeNow
+    required this.dayNow
   });
 
-  final DateTime timeNow;
-
+  final String dayNow;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final style = theme.textTheme.displayMedium!.copyWith(
-      color: theme.colorScheme.onPrimary,  
+    final style = theme.textTheme.displaySmall!.copyWith(
+      color: Colors.black,  
     );
     return Center(
       child: Card(
@@ -66,7 +68,34 @@ class displayCard extends Card {
         color: theme.colorScheme.primary,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Text("$timeNow", style:style),
+          child: Text("$dayNow", style: style,),
+        ),
+      ),
+    );
+  }
+}
+
+class displayTime extends StatelessWidget {
+  const displayTime({
+    super.key,
+    required this.timeNow,
+  });
+
+  final String timeNow;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: Colors.amber,  
+    );
+
+    return Center(
+      child: Card(
+        color: theme.colorScheme.tertiary,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text("$timeNow", style: style,),
         ),
       ),
     );
