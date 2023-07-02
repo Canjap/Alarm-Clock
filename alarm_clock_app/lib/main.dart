@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'alarmsPage.dart';
 void main() {
   runApp(MyApp());
 }
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage>{
               onDestinationSelected: (value) {
                 setState(() {
                   selectedIndex = value;
-                });;
+                });
               },
             ),
           ),
@@ -100,7 +100,7 @@ class GeneratorPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           displayDay(dayNow: dayNow),
-          displayTime(timeNow: timeNow)
+          displayTime(timeNow: timeNow),
         ],
       ),
     );
@@ -127,7 +127,7 @@ class displayDay extends Card {
         color: theme.colorScheme.primary,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Text("$dayNow", style: style,),
+          child: Text(dayNow, style: style,),
         ),
       ),
     );
@@ -154,27 +154,10 @@ class displayTime extends StatelessWidget {
         color: theme.colorScheme.tertiary,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: Text("$timeNow", style: style,),
+          child: Text(timeNow, style: style,),
         ),
       ),
     );
   }
 }
 
-class AlarmsPage extends StatelessWidget {
-  const AlarmsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            
-          ),
-        Text("data"),
-      ]
-      ),
-    );
-  }
-}
