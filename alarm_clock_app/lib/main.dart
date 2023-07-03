@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'alarmsPage.dart';
+import 'alarms_page.dart';
 void main() {
   runApp(MyApp());
 }
@@ -99,8 +99,8 @@ class GeneratorPage extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          displayDay(dayNow: dayNow),
-          displayTime(timeNow: timeNow),
+          DisplayDay(dayNow: dayNow),
+          DisplayTime(timeNow: timeNow),
         ],
       ),
     );
@@ -108,8 +108,8 @@ class GeneratorPage extends StatelessWidget {
 }
 
 
-class displayDay extends Card {
-  const displayDay({
+class DisplayDay extends Card {
+  const DisplayDay({
     super.key,
     required this.dayNow
   });
@@ -134,8 +134,8 @@ class displayDay extends Card {
   }
 }
 
-class displayTime extends StatelessWidget {
-  const displayTime({
+class DisplayTime extends StatelessWidget {
+  const DisplayTime({
     super.key,
     required this.timeNow,
   });
