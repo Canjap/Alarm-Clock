@@ -1,4 +1,6 @@
+import 'package:alarm_clock_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AlarmsPage extends StatefulWidget {
   const AlarmsPage({super.key});
@@ -18,15 +20,27 @@ class _AlarmsPageState extends State<AlarmsPage> {
   }
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-              AddAlarm(changeOpacity), //changeOp function used as arg so that the addAlarm widget can then use it
-              Visibility(visible: isVisible, child: EnterAlarm(),)
-        ]
-        ),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text("New Alarms"),
+          ),
+          for (var selectedTime in appState.alarmsList)
+            ListTile(
+              leading: Icon(Icons.alarm),
+              title: Text("$selectedTime"),
+            ),
+            Stack(
+              children: [
+                AddAlarm(changeOpacity),
+                EnterAlarm(),
+              ],
+            )
+        ],
       ),
     );
   }
@@ -34,7 +48,7 @@ class _AlarmsPageState extends State<AlarmsPage> {
 
 class AddAlarm extends StatefulWidget {
 
-  late Function(bool) callback; //function saved as var: a "bridge" for functions to get one from widget to another
+  late final Function(bool) callback; //function saved as var: a "bridge" for functions to get one from widget to another
 
   AddAlarm(this.callback); 
   @override
@@ -72,13 +86,14 @@ class _EnterAlarmState extends State<EnterAlarm> {
     final style = theme.textTheme.displayMedium!.copyWith(
       color: Colors.blueAccent
     );
-    TimeOfDay selectedTime = TimeOfDay.now();
+    var appState = context.watch<MyAppState>();
+    var selectedTime = appState.selectedTime;
 
     return Card(
         elevation: 20.0,
         color: Colors.black26,
         child: Padding(
-          padding: const EdgeInsets.all(50.0),
+          padding: const EdgeInsets.all(8.0),
           child: ElevatedButton(
             onPressed: () async {
               final TimeOfDay? timeOfDay = await showTimePicker(
@@ -89,6 +104,7 @@ class _EnterAlarmState extends State<EnterAlarm> {
                 if (timeOfDay != null) {
                   setState(() {
                     selectedTime = timeOfDay;
+                    appState.toggleAlarmsList(selectedTime);
                   });
                 }
             },
