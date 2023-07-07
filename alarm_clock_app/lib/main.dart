@@ -26,6 +26,17 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var currentDateTime = DateTime.now();
+  var selectedTime = TimeOfDay.now();
+  var alarmTimes = <TimeOfDay>[];
+  void toggleAlarmsList(newTime) {
+    if(alarmTimes.contains(newTime)) {
+      alarmTimes.remove(newTime);
+    }
+    else {
+      alarmTimes.add(newTime);
+    }
+  }
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -160,4 +171,3 @@ class DisplayTime extends StatelessWidget {
     );
   }
 }
-

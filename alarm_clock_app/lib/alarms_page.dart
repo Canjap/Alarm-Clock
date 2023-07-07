@@ -1,6 +1,7 @@
 import 'package:alarm_clock_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class AlarmsPage extends StatefulWidget {
   const AlarmsPage({super.key});
@@ -21,18 +22,31 @@ class _AlarmsPageState extends State<AlarmsPage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    
+    final player = AudioPlayer();
+
     return Scaffold(
       body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text("New Alarms"),
+            child: Text("New Alarms",),
           ),
-          for (var selectedTime in appState.alarmsList)
-            ListTile(
-              leading: Icon(Icons.alarm),
-              title: Text("$selectedTime"),
+          for (var selectedTime in appState.alarmTimes)
+            Card(
+              shadowColor: Colors.black38,
+              elevation: 10.0,
+              child: Row(
+                children: [
+                  Text("$selectedTime"),
+                  Expanded(child: ElevatedButton(
+                    onPressed: () async {
+                      await player.play(AssetSource("alarm_sound.wav"));
+                    },
+                    child: Text("alarm"),
+                    )
+                  )
+                ],
+              ),
             ),
             Stack(
               children: [
@@ -90,25 +104,31 @@ class _EnterAlarmState extends State<EnterAlarm> {
     var selectedTime = appState.selectedTime;
 
     return Card(
-        elevation: 20.0,
+        elevation: 10,
         color: Colors.black26,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            onPressed: () async {
-              final TimeOfDay? timeOfDay = await showTimePicker(
-                context: context, 
-                initialTime: selectedTime,
-                initialEntryMode: TimePickerEntryMode.input,
-                );
-                if (timeOfDay != null) {
-                  setState(() {
-                    selectedTime = timeOfDay;
-                    appState.toggleAlarmsList(selectedTime);
-                  });
-                }
-            },
-            child: Text("set alarm", style: style,),
+          padding: const EdgeInsets.all(20.0),
+          child: ButtonTheme(
+            minWidth: 100,
+            height: 100,
+            child: ElevatedButton(
+              onPressed: () async {
+                final TimeOfDay? timeOfDay = await showTimePicker(
+                  context: context, 
+                  initialTime: selectedTime,
+                  initialEntryMode: TimePickerEntryMode.input,
+                  );
+                  if (timeOfDay != null) {
+                    setState(() {
+                      selectedTime = timeOfDay;
+                      print(selectedTime);
+                      appState.toggleAlarmsList(selectedTime);
+                      print(appState.alarmTimes);
+                    });
+                  }
+              },
+              child: Text("set alarm", style: style,),
+            ),
           ),
         ),
       );
