@@ -2,6 +2,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'alarms_page.dart';
+import 'package:audioplayers/audioplayers.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -26,14 +28,26 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var currentDateTime = DateTime.now();
+  var timeRN = TimeOfDay.now();
   var selectedTime = TimeOfDay.now();
   var alarmTimes = <TimeOfDay>[];
+  final player = AudioPlayer();
+
   void toggleAlarmsList(newTime) {
     if(alarmTimes.contains(newTime)) {
       alarmTimes.remove(newTime);
     }
     else {
       alarmTimes.add(newTime);
+    }
+  }
+
+  void alarmOn() {
+    print(alarmTimes);
+    print(timeRN);
+    if(alarmTimes.any((element) => element == timeRN)) {
+      player.play(AssetSource("alarm_sound.wav"));
+      print("tes");
     }
   }
 

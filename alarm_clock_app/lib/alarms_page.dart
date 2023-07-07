@@ -22,7 +22,6 @@ class _AlarmsPageState extends State<AlarmsPage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    final player = AudioPlayer();
 
     return Scaffold(
       body: ListView(
@@ -32,33 +31,53 @@ class _AlarmsPageState extends State<AlarmsPage> {
             child: Text("New Alarms",),
           ),
           for (var selectedTime in appState.alarmTimes)
-            Card(
-              shadowColor: Colors.black38,
-              elevation: 10.0,
-              child: Row(
-                children: [
-                  Text("$selectedTime"),
-                  Expanded(child: ElevatedButton(
-                    onPressed: () async {
-                      await player.play(AssetSource("alarm_sound.wav"));
-                    },
-                    child: Text("alarm"),
-                    )
-                  )
-                ],
-              ),
-            ),
+
+            SwitchTileWithBool(selectedTime: selectedTime,),
+
             Stack(
               children: [
                 AddAlarm(changeOpacity),
                 EnterAlarm(),
               ],
-            )
+            ),
         ],
       ),
     );
   }
 }
+
+class SwitchTileWithBool extends StatefulWidget {
+  const SwitchTileWithBool({
+    super.key,
+    required this.selectedTime,
+  });
+  final TimeOfDay selectedTime;
+
+  @override
+  State<SwitchTileWithBool> createState() => _SwitchTileWithBoolState();
+}
+
+class _SwitchTileWithBoolState extends State<SwitchTileWithBool> {
+
+  bool _toggled = false;
+  
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    return SwitchListTile(
+      value: _toggled, 
+      activeColor: Colors.amber,
+      onChanged: (bool value) {
+        setState(() {
+          _toggled = value;
+          appState.alarmOn();
+        });
+      },
+      title: Text(widget.selectedTime.toString()),);
+  }
+}
+
 
 class AddAlarm extends StatefulWidget {
 
