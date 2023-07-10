@@ -2,7 +2,8 @@ import 'package:alarm_clock_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
-
+import 'package:timer_builder/timer_builder.dart';
+import 'dart:async';
 class AlarmsPage extends StatefulWidget {
   const AlarmsPage({super.key});
 
@@ -60,7 +61,34 @@ class SwitchTileWithBool extends StatefulWidget {
 class _SwitchTileWithBoolState extends State<SwitchTileWithBool> {
 
   bool _toggled = false;
-  
+  var timeRN = TimeOfDay.now();
+  late Timer _timer;
+  int on_off =  0;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _timer =  Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+    
+  }
+
+  void _update() {
+    setState(() {  
+      timeRN = TimeOfDay.now();
+      print(timeRN);
+    });
+  }
+
+int getMinutesDiff(TimeOfDay tod1, TimeOfDay tod2) {
+  int difference = (tod1.hour * 60 + tod1.minute) - (tod2.hour * 60 + tod2.minute);
+  if (difference < 0){
+    return (tod1.hour * 60 + tod1.minute + 24*60) - (tod2.hour * 60 + tod2.minute);
+  } 
+  return difference;
+}
+
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -71,13 +99,24 @@ class _SwitchTileWithBoolState extends State<SwitchTileWithBool> {
       onChanged: (bool value) {
         setState(() {
           _toggled = value;
-          appState.alarmOn();
+          Future<int>.delayed(Duration(minutes: getMinutesDiff(widget.selectedTime, timeRN)),
+          () {return 100;},
+          ).then((value) {
+            on_off++;
+            if(on_off % 2 == 1)
+              {appState.alarmOn(widget.selectedTime);}
+            else{
+              appState.onAlarms.remove(widget.selectedTime);
+            }
+            print(appState.alarmTimes);
+            print(appState.onAlarms);
+          });
         });
       },
-      title: Text(widget.selectedTime.toString()),);
+      title: Text("${Duration(minutes: getMinutesDiff(widget.selectedTime, timeRN))}"),);
   }
 }
-
+//widget.selectedTime.toString()
 
 class AddAlarm extends StatefulWidget {
 
@@ -100,7 +139,7 @@ class _AddAlarmState extends State<AddAlarm> {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () => click(), 
-    icon: Icon(Icons.add),
+      icon: Icon(Icons.add),
     );
   }
 }
@@ -140,9 +179,7 @@ class _EnterAlarmState extends State<EnterAlarm> {
                   if (timeOfDay != null) {
                     setState(() {
                       selectedTime = timeOfDay;
-                      print(selectedTime);
                       appState.toggleAlarmsList(selectedTime);
-                      print(appState.alarmTimes);
                     });
                   }
               },
