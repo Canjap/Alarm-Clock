@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'alarms_page.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:timer_builder/timer_builder.dart';
-import 'dart:async';
 void main() {
   runApp(MyApp());
 }
@@ -34,7 +32,6 @@ class MyAppState extends ChangeNotifier {
   final player = AudioPlayer();
   var timeRN = TimeOfDay.now();
   var onAlarms = <TimeOfDay>[];
-  late Timer _timer;
 
 
   
@@ -49,7 +46,7 @@ class MyAppState extends ChangeNotifier {
   }
 
   void alarmOn(onTime) {
-    onAlarms = [...alarmTimes];
+        
     if(onAlarms.contains(onTime))
       {player.play(AssetSource("alarm_sound.wav"));  } 
   }

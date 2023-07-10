@@ -1,9 +1,8 @@
 import 'package:alarm_clock_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:timer_builder/timer_builder.dart';
 import 'dart:async';
+
 class AlarmsPage extends StatefulWidget {
   const AlarmsPage({super.key});
 
@@ -14,10 +13,26 @@ class AlarmsPage extends StatefulWidget {
 class _AlarmsPageState extends State<AlarmsPage> {
 
   bool isVisible = false; 
+  late Timer _timer;
+  TimeOfDay timeRN = TimeOfDay.now();
+
 
   void changeOpacity(bool isVisible) {
     setState(() {
       this.isVisible = !isVisible;
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    _timer =  Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+    
+  }
+
+  void _update() {
+    setState(() {  
+      timeRN = TimeOfDay.now();
+      print(timeRN);
     });
   }
   @override
@@ -33,12 +48,12 @@ class _AlarmsPageState extends State<AlarmsPage> {
           ),
           for (var selectedTime in appState.alarmTimes)
 
-            SwitchTileWithBool(selectedTime: selectedTime,),
+            SwitchTileWithBool(selectedTime: selectedTime, timeRN: timeRN,),
 
             Stack(
               children: [
                 AddAlarm(changeOpacity),
-                EnterAlarm(),
+                EnterAlarm(startTime: timeRN,),
               ],
             ),
         ],
@@ -51,9 +66,10 @@ class SwitchTileWithBool extends StatefulWidget {
   const SwitchTileWithBool({
     super.key,
     required this.selectedTime,
+    required this.timeRN, 
   });
   final TimeOfDay selectedTime;
-
+  final TimeOfDay timeRN; 
   @override
   State<SwitchTileWithBool> createState() => _SwitchTileWithBoolState();
 }
@@ -61,32 +77,18 @@ class SwitchTileWithBool extends StatefulWidget {
 class _SwitchTileWithBoolState extends State<SwitchTileWithBool> {
 
   bool _toggled = false;
-  var timeRN = TimeOfDay.now();
-  late Timer _timer;
-  int on_off =  0;
+  int onOff =  0;
 
 
-  @override
-  void initState() {
-    super.initState();
-    _timer =  Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
-    
+
+
+  int getMinutesDiff(TimeOfDay tod1, TimeOfDay tod2) {
+    int difference = (tod1.hour * 60 + tod1.minute) - (tod2.hour * 60 + tod2.minute);
+    if (difference < 0){
+      return (tod1.hour * 60 + tod1.minute + 24*60) - (tod2.hour * 60 + tod2.minute);
+    } 
+    return difference;
   }
-
-  void _update() {
-    setState(() {  
-      timeRN = TimeOfDay.now();
-      print(timeRN);
-    });
-  }
-
-int getMinutesDiff(TimeOfDay tod1, TimeOfDay tod2) {
-  int difference = (tod1.hour * 60 + tod1.minute) - (tod2.hour * 60 + tod2.minute);
-  if (difference < 0){
-    return (tod1.hour * 60 + tod1.minute + 24*60) - (tod2.hour * 60 + tod2.minute);
-  } 
-  return difference;
-}
 
 
   @override
@@ -99,11 +101,12 @@ int getMinutesDiff(TimeOfDay tod1, TimeOfDay tod2) {
       onChanged: (bool value) {
         setState(() {
           _toggled = value;
-          Future<int>.delayed(Duration(minutes: getMinutesDiff(widget.selectedTime, timeRN)),
+          appState.onAlarms.add(widget.selectedTime);
+          Future<int>.delayed(Duration(minutes: getMinutesDiff(widget.selectedTime, widget.timeRN)),
           () {return 100;},
           ).then((value) {
-            on_off++;
-            if(on_off % 2 == 1)
+            onOff++;
+            if(onOff % 2 == 1)
               {appState.alarmOn(widget.selectedTime);}
             else{
               appState.onAlarms.remove(widget.selectedTime);
@@ -113,7 +116,7 @@ int getMinutesDiff(TimeOfDay tod1, TimeOfDay tod2) {
           });
         });
       },
-      title: Text("${Duration(minutes: getMinutesDiff(widget.selectedTime, timeRN))}"),);
+      title: Text("${Duration(minutes: getMinutesDiff(widget.selectedTime, widget.timeRN))}"),);
   }
 }
 //widget.selectedTime.toString()
@@ -145,7 +148,12 @@ class _AddAlarmState extends State<AddAlarm> {
 }
 
 class EnterAlarm extends StatefulWidget {
-  const EnterAlarm({super.key});
+  const EnterAlarm({
+    super.key,
+  required this.startTime, 
+  });
+
+  final TimeOfDay startTime;
 
   @override
   State<EnterAlarm> createState() => _EnterAlarmState();
@@ -173,7 +181,7 @@ class _EnterAlarmState extends State<EnterAlarm> {
               onPressed: () async {
                 final TimeOfDay? timeOfDay = await showTimePicker(
                   context: context, 
-                  initialTime: selectedTime,
+                  initialTime: widget.startTime,
                   initialEntryMode: TimePickerEntryMode.input,
                   );
                   if (timeOfDay != null) {
